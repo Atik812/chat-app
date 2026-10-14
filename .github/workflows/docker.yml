@@ -1,21 +1,29 @@
+
 name: Build and push Docker images
 
 on:
   push:
+    branches:
+      - main
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   docker:
     runs-on: ubuntu-latest
+
     strategy:
+      fail-fast: false
       matrix:
         include:
           - service: backend
-            image: 100xdevs/chat-app-backend
+            image: botxsatan/chat-app-backend
           - service: frontend
-            image: 100xdevs/chat-app-frontend
+            image: botxsatan/chat-app-frontend
           - service: websocket
-            image: 100xdevs/chat-app-websocket
+            image: botxsatan/chat-app-websocket
 
     steps:
       - name: Checkout
@@ -27,7 +35,7 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v4
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push ${{ matrix.service }}
